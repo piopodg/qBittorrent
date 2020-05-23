@@ -299,6 +299,8 @@ namespace BitTorrent
         void setAltGlobalSpeedLimitEnabled(bool enabled);
         bool isBandwidthSchedulerEnabled() const;
         void setBandwidthSchedulerEnabled(bool enabled);
+        bool isAltStateEnabled() const;
+        void setAltStateEnabled(bool enabled);
 
         uint saveResumeDataInterval() const;
         void setSaveResumeDataInterval(uint value);
@@ -689,6 +691,7 @@ namespace BitTorrent
         CachedSettingValue<int> m_altGlobalDownloadSpeedLimit;
         CachedSettingValue<int> m_altGlobalUploadSpeedLimit;
         CachedSettingValue<bool> m_isAltGlobalSpeedLimitEnabled;
+        CachedSettingValue<bool> m_isAltStateEnabled;
         CachedSettingValue<bool> m_isBandwidthSchedulerEnabled;
         CachedSettingValue<uint> m_saveResumeDataInterval;
         CachedSettingValue<int> m_port;
@@ -743,6 +746,7 @@ namespace BitTorrent
 
         QHash<InfoHash, TorrentInfo> m_loadedMetadata;
         QHash<InfoHash, TorrentHandleImpl *> m_torrents;
+        QHash<InfoHash, TorrentHandleImpl *> m_torrents_to_resume;
         QHash<InfoHash, CreateTorrentParams> m_addingTorrents;
         QHash<QString, AddTorrentParams> m_downloadedTorrents;
         QHash<InfoHash, RemovingTorrentData> m_removingTorrents;

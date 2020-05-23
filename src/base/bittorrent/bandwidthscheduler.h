@@ -32,6 +32,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QDateTime>
 
 class BandwidthScheduler : public QObject
 {

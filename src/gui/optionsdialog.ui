@@ -10,6 +10,12 @@
     <height>591</height>
    </rect>
   </property>
+  <property name="baseSize">
+   <size>
+    <width>25</width>
+    <height>8</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Options</string>
   </property>
@@ -90,7 +96,7 @@
      </widget>
      <widget class="QStackedWidget" name="tabOption">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabBehaviorPage">
        <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -122,8 +128,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>501</width>
-             <height>893</height>
+             <width>508</width>
+             <height>1164</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -735,8 +741,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>591</width>
-             <height>1138</height>
+             <width>547</width>
+             <height>1342</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1346,8 +1352,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>501</width>
-             <height>745</height>
+             <width>509</width>
+             <height>813</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -1846,8 +1852,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>516</width>
-             <height>525</height>
+             <width>530</width>
+             <height>535</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -1928,8 +1934,22 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                <string>Alternative Rate Limits</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
-               <item row="1" column="2">
-                <widget class="QSpinBox" name="spinDownloadLimitAlt">
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Upload:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Download:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QSpinBox" name="spinUploadLimitAlt">
                  <property name="specialValueText">
                   <string>∞</string>
                  </property>
@@ -1944,10 +1964,30 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0" rowspan="2">
-                <widget class="QLabel" name="labelAltRate"/>
+               <item row="0" column="4">
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
-               <item row="2" column="0" colspan="4">
+               <item row="0" column="3">
+                <widget class="QCheckBox" name="checkAltPauseAll">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pause all torrents&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Pause All</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="5">
                 <widget class="QGroupBox" name="groupBoxSchedule">
                  <property name="title">
                   <string>Schedule &amp;the use of alternative rate limits</string>
@@ -1959,33 +1999,6 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_7">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_6">
-                    <property name="toolTip">
-                     <string>Start time</string>
-                    </property>
-                    <property name="text">
-                     <string comment="From start time">From:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QTimeEdit" name="timeEditScheduleTo">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="displayFormat">
-                     <string notr="true">hh:mm</string>
-                    </property>
-                    <property name="time">
-                     <time>
-                      <hour>20</hour>
-                      <minute>0</minute>
-                      <second>0</second>
-                     </time>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="2">
                    <widget class="QLabel" name="label_17">
                     <property name="toolTip">
@@ -1996,23 +2009,26 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QTimeEdit" name="timeEditScheduleFrom">
-                    <property name="wrapping">
-                     <bool>true</bool>
+                  <item row="0" column="5">
+                   <spacer name="horizontalSpacer_8">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
                     </property>
-                    <property name="displayFormat">
-                     <string notr="true">hh:mm</string>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <property name="calendarPopup">
-                     <bool>false</bool>
+                   </spacer>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_6">
+                    <property name="toolTip">
+                     <string>Start time</string>
                     </property>
-                    <property name="time">
-                     <time>
-                      <hour>8</hour>
-                      <minute>0</minute>
-                      <second>0</second>
-                     </time>
+                    <property name="text">
+                     <string comment="From start time">From:</string>
                     </property>
                    </widget>
                   </item>
@@ -2048,24 +2064,51 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                     </item>
                    </widget>
                   </item>
-                  <item row="0" column="4">
-                   <spacer name="horizontalSpacer_8">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
+                  <item row="0" column="1">
+                   <widget class="QTimeEdit" name="timeEditScheduleFrom">
+                    <property name="wrapping">
+                     <bool>true</bool>
                     </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
+                    <property name="displayFormat">
+                     <string notr="true">hh:mm</string>
                     </property>
-                   </spacer>
+                    <property name="calendarPopup">
+                     <bool>false</bool>
+                    </property>
+                    <property name="time">
+                     <time>
+                      <hour>8</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                     </time>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QTimeEdit" name="timeEditScheduleTo">
+                    <property name="wrapping">
+                     <bool>true</bool>
+                    </property>
+                    <property name="displayFormat">
+                     <string notr="true">hh:mm</string>
+                    </property>
+                    <property name="time">
+                     <time>
+                      <hour>20</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                     </time>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QSpinBox" name="spinUploadLimitAlt">
+               <item row="0" column="0" rowspan="3">
+                <widget class="QLabel" name="labelAltRate"/>
+               </item>
+               <item row="2" column="2">
+                <widget class="QSpinBox" name="spinDownloadLimitAlt">
                  <property name="specialValueText">
                   <string>∞</string>
                  </property>
@@ -2077,33 +2120,6 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                  </property>
                  <property name="value">
                   <number>10</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <spacer name="horizontalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_13">
-                 <property name="text">
-                  <string>Upload:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="label_14">
-                 <property name="text">
-                  <string>Download:</string>
                  </property>
                 </widget>
                </item>
@@ -2183,8 +2199,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>513</width>
-             <height>679</height>
+             <width>467</width>
+             <height>817</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -2629,7 +2645,7 @@ Disable encryption: Only connect to peers without protocol encryption</string>
                <item row="0" column="0">
                 <widget class="QPlainTextEdit" name="textTrackers">
                  <property name="enabled">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="focusPolicy">
                   <enum>Qt::StrongFocus</enum>
@@ -2682,8 +2698,8 @@ Disable encryption: Only connect to peers without protocol encryption</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>516</width>
-             <height>525</height>
+             <width>386</width>
+             <height>457</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -2852,8 +2868,8 @@ Disable encryption: Only connect to peers without protocol encryption</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>501</width>
-             <height>636</height>
+             <width>423</width>
+             <height>1189</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_23">
