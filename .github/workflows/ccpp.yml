@@ -27,7 +27,7 @@ jobs:
     - name: Configure libtorrent
       run: cd libtorrent-rasterbar-1.2.6 && ./configure --disable-debug --enable-encryption CXXFLAGS="-std=c++14"
     - name: make libtorrent
-      run: make -j$(nproc) && sudo make install && cd ..
+      run: make && sudo make install && cd ..
     - uses: actions/checkout@v2
     - name: configure
       run: ./configure CXXFLAGS="-std=c++14"
