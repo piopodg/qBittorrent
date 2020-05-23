@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      uses: apt install build-essential pkg-config automake libtool git zlib1g-dev libssl-dev libgeoip-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev python3 libtorrent-rasterbar-dev qtbase5-dev qttools5-dev libqt5svg5-dev
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
     - uses: actions/checkout@v2
     - name: configure
       run: ./configure CXXFLAGS="-std=c++14"
