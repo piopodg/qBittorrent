@@ -18,6 +18,8 @@ jobs:
       run: sudo apt install -y libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev
     - name: install python3
       run: sudo apt install -y python3
+    - name: install Qt
+      run: sudo apt install qtbase5-dev qttools5-dev libqt5svg5-dev
     - name: install libtorrent
       run: sudo apt install -y libtorrent-rasterbar-dev
     - uses: actions/checkout@v2
