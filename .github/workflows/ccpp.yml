@@ -12,8 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+    - name: Install Deps
+      run: sudo apt install -y build-essential pkg-config automake libtool git zlib1g-dev libssl-dev libgeoip-dev
+    - name: install Boost
+      run: sudo apt install -y libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev
+    - name: install python3
+      run: sudo apt install -y python3
+    - name: install libtorrent
+      run: sudo apt install -y libtorrent-rasterbar-dev
     - uses: actions/checkout@v2
     - name: configure
       run: ./configure CXXFLAGS="-std=c++14"
