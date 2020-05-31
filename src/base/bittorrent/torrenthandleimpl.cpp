@@ -65,12 +65,15 @@
 #include "base/tristatebool.h"
 #include "base/utils/fs.h"
 #include "base/utils/string.h"
+#include "common.h"
 #include "downloadpriority.h"
 #include "ltunderlyingtype.h"
 #include "peeraddress.h"
 #include "peerinfo.h"
 #include "session.h"
 #include "trackerentry.h"
+
+const QString QB_EXT {QStringLiteral(".!qB")};
 
 using namespace BitTorrent;
 
@@ -432,6 +435,11 @@ void TorrentHandleImpl::replaceTrackers(const QVector<TrackerEntry> &trackers)
 
         if (!newTrackers.isEmpty())
             m_session->handleTorrentTrackersAdded(this, newTrackers);
+
+        // Clear the peer list if it's a private torrent since
+        // we do not want to keep connecting with peers from old tracker.
+        if (isPrivate())
+            clearPeers();
     }
 }
 
@@ -484,6 +492,13 @@ void TorrentHandleImpl::removeUrlSeeds(const QVector<QUrl> &urlSeeds)
 
     if (!removedUrlSeeds.isEmpty())
         m_session->handleTorrentUrlSeedsRemoved(this, removedUrlSeeds);
+}
+
+void TorrentHandleImpl::clearPeers()
+{
+#if (LIBTORRENT_VERSION_NUM >= 10207)
+    m_nativeHandle.clear_peers();
+#endif
 }
 
 bool TorrentHandleImpl::connectPeer(const PeerAddress &peerAddress)
