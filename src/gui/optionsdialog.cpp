@@ -770,7 +770,7 @@ void OptionsDialog::saveOptions()
     session->setGlobalUploadSpeedLimit(m_ui->spinUploadLimit->value() * 1024);
     session->setAltGlobalDownloadSpeedLimit(m_ui->spinDownloadLimitAlt->value() * 1024);
     session->setAltGlobalUploadSpeedLimit(m_ui->spinUploadLimitAlt->value() * 1024);
-    session->setAltStateEnabled(m_ui->checkAltPauseAll->isChecked());
+    session->setAltPauseEnabled(m_ui->checkAltPauseAll->isChecked());
     session->setUTPRateLimited(m_ui->checkLimituTPConnections->isChecked());
     session->setIncludeOverheadInLimits(m_ui->checkLimitTransportOverhead->isChecked());
     session->setIgnoreLimitsOnLAN(!m_ui->checkLimitLocalPeerRate->isChecked());
@@ -1153,7 +1153,7 @@ void OptionsDialog::loadOptions()
     m_ui->spinUploadLimit->setValue(session->globalUploadSpeedLimit() / 1024);
     m_ui->spinDownloadLimitAlt->setValue(session->altGlobalDownloadSpeedLimit() / 1024);
     m_ui->spinUploadLimitAlt->setValue(session->altGlobalUploadSpeedLimit() / 1024);
-    m_ui->checkAltPauseAll->setChecked(session->isAltStateEnabled());
+    m_ui->checkAltPauseAll->setChecked(session->isAltPauseEnabled());
 
     m_ui->checkLimituTPConnections->setChecked(session->isUTPRateLimited());
     m_ui->checkLimitTransportOverhead->setChecked(session->includeOverheadInLimits());
@@ -1822,6 +1822,6 @@ void OptionsDialog::on_IPSubnetWhitelistButton_clicked()
 void OptionsDialog::on_checkAltPauseAll_stateChanged(int enabled)
 {
     BitTorrent::Session *const session = BitTorrent::Session::instance();
-    session->setAltStateEnabled(enabled);
+    session->setAltPauseEnabled(enabled);
     m_ui->checkAltPauseAll->setChecked(enabled);
 }

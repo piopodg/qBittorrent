@@ -409,6 +409,10 @@
                 <td><label for="alt_dl_limit_value">QBT_TR(Download:)QBT_TR[CONTEXT=OptionsDialog]</label></td>
                 <td><input type="number" id="alt_dl_limit_value" style="width: 4em;" min="0" />&nbsp;&nbsp;QBT_TR(KiB/s)QBT_TR[CONTEXT=OptionsDialog]</td>
             </tr>
+            <tr>
+                <td><input type="checkbox" id="alt_pause_all_checkbox" onclick="qBittorrent.Preferences.updateAltPauseAllEnabled();" /></td>
+                <td><label for="alt_pause_all_checkbox">QBT_TR(Pause All:)QBT_TR[CONTEXT=OptionsDialog]</label></td>
+            </tr>
         </table>
         <i>QBT_TR(0 means unlimited)QBT_TR[CONTEXT=OptionsDialog]</i>
 
@@ -1147,6 +1151,7 @@
                 updatePeerProxyAuthSettings: updatePeerProxyAuthSettings,
                 updateFilterSettings: updateFilterSettings,
                 updateSchedulingEnabled: updateSchedulingEnabled,
+                updateAltPauseAllEnabled: updateAltPauseAllEnabled,
                 updateQueueingSystem: updateQueueingSystem,
                 updateSlowTorrentsSettings: updateSlowTorrentsSettings,
                 updateMaxRatioTimeEnabled: updateMaxRatioTimeEnabled,
@@ -1342,7 +1347,10 @@
             $('schedule_to_min').setProperty('disabled', !isLimitSchedulingEnabled);
             $('schedule_freq_select').setProperty('disabled', !isLimitSchedulingEnabled);
         };
+        const updateAltPauseAllEnabled = function() {
+            const isAltPauseAllEnabled = $('alt_pause_all_checkbox').getProperty('checked');
 
+        }
         // Bittorrent tab
         const updateQueueingSystem = function() {
             const isQueueingEnabled = $('queueing_checkbox').getProperty('checked');
@@ -1653,6 +1661,8 @@
                         // Alternative Global Rate Limits
                         $('alt_up_limit_value').setProperty('value', (pref.alt_up_limit.toInt() / 1024));
                         $('alt_dl_limit_value').setProperty('value', (pref.alt_dl_limit.toInt() / 1024));
+                        $('alt_pause_all_checkbox').setProperty('checked', pref.alt_pause_all);
+                        updateAltPauseAllEnabled();
 
                         $('enable_protocol_combobox').setProperty('value', pref.bittorrent_protocol);
                         $('limit_utp_rate_checkbox').setProperty('checked', pref.limit_utp_rate);
@@ -1981,6 +1991,9 @@
                 return;
             }
             settings.set('alt_dl_limit', alt_dl_limit);
+
+            const alt_pause_all = $('alt_pause_all_checkbox').getProperty('checked');
+            settings.set('alt_pause_all', alt_pause_all);
 
             settings.set('bittorrent_protocol', $('enable_protocol_combobox').getProperty('value'));
             settings.set('limit_utp_rate', $('limit_utp_rate_checkbox').getProperty('checked'));

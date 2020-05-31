@@ -533,7 +533,7 @@ Session::Session(QObject *parent)
     , m_altGlobalDownloadSpeedLimit(BITTORRENT_SESSION_KEY("AlternativeGlobalDLSpeedLimit"), 10, lowerLimited(0))
     , m_altGlobalUploadSpeedLimit(BITTORRENT_SESSION_KEY("AlternativeGlobalUPSpeedLimit"), 10, lowerLimited(0))
     , m_isAltGlobalSpeedLimitEnabled(BITTORRENT_SESSION_KEY("UseAlternativeGlobalSpeedLimit"), false)
-    , m_isAltStateEnabled(BITTORRENT_SESSION_KEY("AlternativePauseTorrents"), false)
+    , m_isAltPauseEnabled(BITTORRENT_SESSION_KEY("AlternativePauseTorrents"), false)
     , m_isBandwidthSchedulerEnabled(BITTORRENT_SESSION_KEY("BandwidthSchedulerEnabled"), false)
     , m_saveResumeDataInterval(BITTORRENT_SESSION_KEY("SaveResumeDataInterval"), 60)
     , m_port(BITTORRENT_SESSION_KEY("Port"), -1)
@@ -1264,7 +1264,7 @@ void Session::adjustLimits(lt::settings_pack &settingsPack)
 void Session::applyBandwidthLimits(lt::settings_pack &settingsPack) const
 {
     const bool altSpeedLimitEnabled = isAltGlobalSpeedLimitEnabled();
-    bool alt_state = isAltStateEnabled();
+    bool alt_state = isAltPauseEnabled();
     settingsPack.set_int(lt::settings_pack::download_rate_limit, altSpeedLimitEnabled ? altGlobalDownloadSpeedLimit() : globalDownloadSpeedLimit());
     settingsPack.set_int(lt::settings_pack::upload_rate_limit, altSpeedLimitEnabled ? altGlobalUploadSpeedLimit() : globalUploadSpeedLimit());
     //TODO check varaible for changing state in alternative mode
@@ -2965,14 +2965,15 @@ bool Session::isAltGlobalSpeedLimitEnabled() const
     return m_isAltGlobalSpeedLimitEnabled;
 }
 
-bool Session::isAltStateEnabled() const
+bool Session::isAltPauseEnabled() const
 {
-    return m_isAltStateEnabled;
+    return m_isAltPauseEnabled;
 }
 
-void Session::setAltStateEnabled(bool enabled)
+void Session::setAltPauseEnabled(const bool enabled)
 {
-    m_isAltStateEnabled = enabled;
+    if (enabled == isAltPauseEnabled()) return;
+    m_isAltPauseEnabled = enabled;
 }
 
 void Session::setAltGlobalSpeedLimitEnabled(const bool enabled)
