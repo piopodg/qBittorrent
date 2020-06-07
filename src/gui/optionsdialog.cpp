@@ -402,7 +402,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     connect(m_ui->spinDownloadLimit, qSpinBoxValueChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->spinUploadLimitAlt, qSpinBoxValueChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->spinDownloadLimitAlt, qSpinBoxValueChanged, this, &ThisType::enableApplyButton);
-    connect(m_ui->checkAltPauseAll, &QAbstractButton::toggled, this, &ThisType::enableApplyButton);
+    connect(m_ui->comboBoxAltDownloadState, qComboBoxCurrentIndexChanged, this, &ThisType::enableApplyButton);
+    connect(m_ui->comboBoxAltUploadState, qComboBoxCurrentIndexChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->groupBoxSchedule, &QGroupBox::toggled, this, &ThisType::enableApplyButton);
     connect(m_ui->timeEditScheduleFrom, &QDateTimeEdit::timeChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->timeEditScheduleTo, &QDateTimeEdit::timeChanged, this, &ThisType::enableApplyButton);
@@ -771,10 +772,13 @@ void OptionsDialog::saveOptions()
     session->setGlobalUploadSpeedLimit(m_ui->spinUploadLimit->value() * 1024);
     session->setAltGlobalDownloadSpeedLimit(m_ui->spinDownloadLimitAlt->value() * 1024);
     session->setAltGlobalUploadSpeedLimit(m_ui->spinUploadLimitAlt->value() * 1024);
-    session->setAltPauseEnabled(m_ui->checkAltPauseAll->isChecked());
+    session->setAltDownloadsState(m_ui->comboBoxAltDownloadState->currentIndex());
+    session->setAltUploadsState(m_ui->comboBoxAltUploadState->currentIndex());
     session->setUTPRateLimited(m_ui->checkLimituTPConnections->isChecked());
     session->setIncludeOverheadInLimits(m_ui->checkLimitTransportOverhead->isChecked());
     session->setIgnoreLimitsOnLAN(!m_ui->checkLimitLocalPeerRate->isChecked());
+    session->setAltDownloadsState(m_ui->comboBoxAltDownloadState->currentIndex());
+    session->setAltUploadsState(m_ui->comboBoxAltUploadState->currentIndex());
     pref->setSchedulerStartTime(m_ui->timeEditScheduleFrom->time());
     pref->setSchedulerEndTime(m_ui->timeEditScheduleTo->time());
     pref->setSchedulerDays(static_cast<SchedulerDays>(m_ui->comboBoxScheduleDays->currentIndex()));
@@ -1154,7 +1158,8 @@ void OptionsDialog::loadOptions()
     m_ui->spinUploadLimit->setValue(session->globalUploadSpeedLimit() / 1024);
     m_ui->spinDownloadLimitAlt->setValue(session->altGlobalDownloadSpeedLimit() / 1024);
     m_ui->spinUploadLimitAlt->setValue(session->altGlobalUploadSpeedLimit() / 1024);
-    m_ui->checkAltPauseAll->setChecked(session->isAltPauseEnabled());
+    m_ui->comboBoxAltUploadState->setCurrentIndex(session->altUploadsState());
+    m_ui->comboBoxAltDownloadState->setCurrentIndex(session->altDownloadsState());
 
     m_ui->checkLimituTPConnections->setChecked(session->isUTPRateLimited());
     m_ui->checkLimitTransportOverhead->setChecked(session->includeOverheadInLimits());
@@ -1820,9 +1825,29 @@ void OptionsDialog::on_IPSubnetWhitelistButton_clicked()
     dialog->open();
 }
 
-void OptionsDialog::on_checkAltPauseAll_stateChanged(int enabled)
+void OptionsDialog::on_comboBoxAltUploadState_currentIndexChanged(int index)
 {
     BitTorrent::Session *const session = BitTorrent::Session::instance();
-    session->setAltPauseEnabled(enabled);
-    m_ui->checkAltPauseAll->setChecked(enabled);
+    session->setAltUploadsState(index);
+    // disable spinbox if Pause is enabled
+    if (index) {
+        m_ui->spinUploadLimitAlt->setEnabled(false);
+    }
+    else {
+        m_ui->spinUploadLimitAlt->setEnabled(true);
+    }
+}
+
+void OptionsDialog::on_comboBoxAltDownloadState_currentIndexChanged(int index)
+{
+    BitTorrent::Session *const session = BitTorrent::Session::instance();
+    session->setAltDownloadsState(index);
+    // disable spinbox if Pause is enabled
+    if (index) {
+        m_ui->spinDownloadLimitAlt->setEnabled(false);
+
+    }
+    else {
+        m_ui->spinDownloadLimitAlt->setEnabled(true);
+    }
 }

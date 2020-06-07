@@ -128,8 +128,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>508</width>
-             <height>1164</height>
+             <width>582</width>
+             <height>1147</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -741,8 +741,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>547</width>
-             <height>1342</height>
+             <width>615</width>
+             <height>1294</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1352,8 +1352,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>509</width>
-             <height>813</height>
+             <width>460</width>
+             <height>763</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -1852,8 +1852,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>530</width>
-             <height>535</height>
+             <width>532</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -1934,60 +1934,7 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                <string>Alternative Rate Limits</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_13">
-                 <property name="text">
-                  <string>Upload:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLabel" name="label_14">
-                 <property name="text">
-                  <string>Download:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QSpinBox" name="spinUploadLimitAlt">
-                 <property name="specialValueText">
-                  <string>∞</string>
-                 </property>
-                 <property name="suffix">
-                  <string> KiB/s</string>
-                 </property>
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                 <property name="value">
-                  <number>10</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="4">
-                <spacer name="horizontalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="3">
-                <widget class="QCheckBox" name="checkAltPauseAll">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pause all torrents&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Pause All</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="5">
+               <item row="4" column="0" colspan="5">
                 <widget class="QGroupBox" name="groupBoxSchedule">
                  <property name="title">
                   <string>Schedule &amp;the use of alternative rate limits</string>
@@ -2107,7 +2054,7 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                <item row="0" column="0" rowspan="3">
                 <widget class="QLabel" name="labelAltRate"/>
                </item>
-               <item row="2" column="2">
+               <item row="2" column="3">
                 <widget class="QSpinBox" name="spinDownloadLimitAlt">
                  <property name="specialValueText">
                   <string>∞</string>
@@ -2120,6 +2067,77 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
                  </property>
                  <property name="value">
                   <number>10</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QComboBox" name="comboBoxAltUploadState">
+                 <item>
+                  <property name="text">
+                   <string>Limit Speed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Pause Upload</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Download:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QSpinBox" name="spinUploadLimitAlt">
+                 <property name="specialValueText">
+                  <string>∞</string>
+                 </property>
+                 <property name="suffix">
+                  <string> KiB/s</string>
+                 </property>
+                 <property name="maximum">
+                  <number>1000000</number>
+                 </property>
+                 <property name="value">
+                  <number>10</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="2">
+                <widget class="QComboBox" name="comboBoxAltDownloadState">
+                 <item>
+                  <property name="text">
+                   <string>Limit Speed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Pause Downloads</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Upload:</string>
                  </property>
                 </widget>
                </item>
@@ -2199,8 +2217,8 @@ Manual: Various torrent properties (e.g. save path) must be assigned manually</s
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>467</width>
-             <height>817</height>
+             <width>518</width>
+             <height>752</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -2698,8 +2716,8 @@ Disable encryption: Only connect to peers without protocol encryption</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>386</width>
-             <height>457</height>
+             <width>427</width>
+             <height>433</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -2868,8 +2886,8 @@ Disable encryption: Only connect to peers without protocol encryption</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>423</width>
-             <height>1189</height>
+             <width>483</width>
+             <height>1100</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_23">

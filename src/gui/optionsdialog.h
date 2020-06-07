@@ -112,7 +112,9 @@ private slots:
     void webUIHttpsCertChanged(const QString &path, ShowError showError);
     void webUIHttpsKeyChanged(const QString &path, ShowError showError);
 
-    void on_checkAltPauseAll_stateChanged(int arg1);
+    void on_comboBoxAltUploadState_currentIndexChanged(int index);
+
+    void on_comboBoxAltDownloadState_currentIndexChanged(int index);
 
 private:
     // Methods

@@ -291,6 +291,10 @@ namespace BitTorrent
         void setAltGlobalDownloadSpeedLimit(int limit);
         int altGlobalUploadSpeedLimit() const;
         void setAltGlobalUploadSpeedLimit(int limit);
+        int altDownloadsState() const;
+        void setAltDownloadsState(int state);
+        int altUploadsState() const;
+        void setAltUploadsState(int enabled);
         int downloadSpeedLimit() const;
         void setDownloadSpeedLimit(int limit);
         int uploadSpeedLimit() const;
@@ -559,7 +563,9 @@ namespace BitTorrent
         void configureNetworkInterfaces(lt::settings_pack &settingsPack);
         void configurePeerClasses();
         void adjustLimits(lt::settings_pack &settingsPack);
-        void applyBandwidthLimits(lt::settings_pack &settingsPack) const;
+        void applyBandwidthLimits(lt::settings_pack &settingsPack);
+        void applyAltDownloadState(int enabled);
+        void applyAltUploadsState(int enabled);
         void initMetrics();
         void adjustLimits();
         void applyBandwidthLimits();
@@ -693,6 +699,8 @@ namespace BitTorrent
         CachedSettingValue<bool> m_isAltGlobalSpeedLimitEnabled;
         CachedSettingValue<bool> m_isAltPauseEnabled;
         CachedSettingValue<bool> m_isBandwidthSchedulerEnabled;
+        CachedSettingValue<int> m_altDownloadsState;
+        CachedSettingValue<int> m_altUploadsState;
         CachedSettingValue<uint> m_saveResumeDataInterval;
         CachedSettingValue<int> m_port;
         CachedSettingValue<bool> m_useRandomPort;
