@@ -173,8 +173,8 @@ void AppController::preferencesAction()
     data["up_limit"] = session->globalUploadSpeedLimit();
     data["alt_dl_limit"] = session->altGlobalDownloadSpeedLimit();
     data["alt_up_limit"] = session->altGlobalUploadSpeedLimit();
-    data["alt_up_state"] = session->altUploadsState();
-    data["alt_dl_state"] = session->altDownloadsState();
+    data["alt_up_state_value"] = session->altUploadsState();
+    data["alt_dl_state_value"] = session->altDownloadsState();
 
     data["bittorrent_protocol"] = static_cast<int>(session->btProtocol());
     data["limit_utp_rate"] = session->isUTPRateLimited();
@@ -502,9 +502,9 @@ void AppController::setPreferencesAction()
         session->setAltGlobalDownloadSpeedLimit(it.value().toInt());
     if (hasKey("alt_up_limit"))
        session->setAltGlobalUploadSpeedLimit(it.value().toInt());
-    if (hasKey("alt_up_state"))
+    if (hasKey("alt_up_state_value"))
         session->setAltUploadsState(it.value().toInt());
-    if (hasKey("alt_dl_state"))
+    if (hasKey("alt_dl_state_value"))
         session->setAltDownloadsState(it.value().toInt());
 
     if (hasKey("bittorrent_protocol"))

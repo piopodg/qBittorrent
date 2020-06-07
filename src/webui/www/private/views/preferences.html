@@ -1159,7 +1159,6 @@
                 updatePeerProxyAuthSettings: updatePeerProxyAuthSettings,
                 updateFilterSettings: updateFilterSettings,
                 updateSchedulingEnabled: updateSchedulingEnabled,
-                updateAltPauseAllEnabled: updateAltPauseAllEnabled,
                 updateQueueingSystem: updateQueueingSystem,
                 updateSlowTorrentsSettings: updateSlowTorrentsSettings,
                 updateMaxRatioTimeEnabled: updateMaxRatioTimeEnabled,
@@ -1666,8 +1665,8 @@
                         // Alternative Global Rate Limits
                         $('alt_up_limit_value').setProperty('value', (pref.alt_up_limit.toInt() / 1024));
                         $('alt_dl_limit_value').setProperty('value', (pref.alt_dl_limit.toInt() / 1024));
-                        $('alt_up_state_combobox').setProperty('value', pref.alt_up_state);
-                        $('alt_dl_state_combobox').setProperty('value', pref.alt_dl_state);
+                        $('alt_up_state_combobox').setProperty('value', pref.alt_up_state_value.toInt());
+                        $('alt_dl_state_combobox').setProperty('value', pref.alt_dl_state_value.toInt());
 
                         $('enable_protocol_combobox').setProperty('value', pref.bittorrent_protocol);
                         $('limit_utp_rate_checkbox').setProperty('checked', pref.limit_utp_rate);
@@ -1997,8 +1996,8 @@
             }
             settings.set('alt_dl_limit', alt_dl_limit);
 
-            settings.set('alt_up_state', $('alt_up_state_combobox').getProperty('value'));
-            settings.set('alt_dl_state', $('alt_dl_state_combobox').getProperty('value'));
+            settings.set('alt_up_state_value', $('alt_up_state_combobox').getProperty('value'));
+            settings.set('alt_dl_state_value', $('alt_dl_state_combobox').getProperty('value'));
 
             settings.set('bittorrent_protocol', $('enable_protocol_combobox').getProperty('value'));
             settings.set('limit_utp_rate', $('limit_utp_rate_checkbox').getProperty('checked'));

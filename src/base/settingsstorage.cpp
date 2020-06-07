@@ -82,6 +82,8 @@ namespace
             {"BitTorrent/Session/GlobalDLSpeedLimit", "Preferences/Connection/GlobalDLLimit"},
             {"BitTorrent/Session/AlternativeGlobalUPSpeedLimit", "Preferences/Connection/GlobalUPLimitAlt"},
             {"BitTorrent/Session/AlternativeGlobalDLSpeedLimit", "Preferences/Connection/GlobalDLLimitAlt"},
+            {"BitTorrent/Session/AlternativeUploadsState", "Preferences/Connection/AlternativeUploadsState"},
+            {"BitTorrent/Session/AlternativeDownloadsState", "Preferences/Connection/AlternativeDownloadsState"},
             {"BitTorrent/Session/UseAlternativeGlobalSpeedLimit", "Preferences/Connection/alt_speeds_on"},
             {"BitTorrent/Session/BandwidthSchedulerEnabled", "Preferences/Scheduler/Enabled"},
             {"BitTorrent/Session/Port", "Preferences/Connection/PortRangeMin"},

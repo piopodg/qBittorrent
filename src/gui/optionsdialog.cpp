@@ -777,8 +777,6 @@ void OptionsDialog::saveOptions()
     session->setUTPRateLimited(m_ui->checkLimituTPConnections->isChecked());
     session->setIncludeOverheadInLimits(m_ui->checkLimitTransportOverhead->isChecked());
     session->setIgnoreLimitsOnLAN(!m_ui->checkLimitLocalPeerRate->isChecked());
-    session->setAltDownloadsState(m_ui->comboBoxAltDownloadState->currentIndex());
-    session->setAltUploadsState(m_ui->comboBoxAltUploadState->currentIndex());
     pref->setSchedulerStartTime(m_ui->timeEditScheduleFrom->time());
     pref->setSchedulerEndTime(m_ui->timeEditScheduleTo->time());
     pref->setSchedulerDays(static_cast<SchedulerDays>(m_ui->comboBoxScheduleDays->currentIndex()));

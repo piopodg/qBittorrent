@@ -533,10 +533,9 @@ Session::Session(QObject *parent)
     , m_altGlobalDownloadSpeedLimit(BITTORRENT_SESSION_KEY("AlternativeGlobalDLSpeedLimit"), 10, lowerLimited(0))
     , m_altGlobalUploadSpeedLimit(BITTORRENT_SESSION_KEY("AlternativeGlobalUPSpeedLimit"), 10, lowerLimited(0))
     , m_isAltGlobalSpeedLimitEnabled(BITTORRENT_SESSION_KEY("UseAlternativeGlobalSpeedLimit"), false)
-    , m_isAltPauseEnabled(BITTORRENT_SESSION_KEY("AlternativePauseTorrents"), false)
     , m_isBandwidthSchedulerEnabled(BITTORRENT_SESSION_KEY("BandwidthSchedulerEnabled"), false)
-    , m_altDownloadsState(BITTORRENT_SESSION_KEY("AlternativePauseDownloadsEnabled"), 0)
-    , m_altUploadsState(BITTORRENT_SESSION_KEY("AlternativePauseUploadsEnabled"), 0)
+    , m_altDownloadsState(BITTORRENT_SESSION_KEY("AlternativeDownloadsState"), 0)
+    , m_altUploadsState(BITTORRENT_SESSION_KEY("AlternativeUploadsState"), 0)
     , m_saveResumeDataInterval(BITTORRENT_SESSION_KEY("SaveResumeDataInterval"), 60)
     , m_port(BITTORRENT_SESSION_KEY("Port"), -1)
     , m_useRandomPort(BITTORRENT_SESSION_KEY("UseRandomPort"), false)
@@ -3026,17 +3025,6 @@ void Session::setUploadSpeedLimit(const int limit)
 bool Session::isAltGlobalSpeedLimitEnabled() const
 {
     return m_isAltGlobalSpeedLimitEnabled;
-}
-
-bool Session::isAltPauseEnabled() const
-{
-    return m_isAltPauseEnabled;
-}
-
-void Session::setAltPauseEnabled(const bool enabled)
-{
-    if (enabled == isAltPauseEnabled()) return;
-    m_isAltPauseEnabled = enabled;
 }
 
 void Session::setAltGlobalSpeedLimitEnabled(const bool enabled)
