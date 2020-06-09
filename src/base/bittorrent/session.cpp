@@ -94,6 +94,8 @@
 #include "base/utils/net.h"
 #include "base/utils/random.h"
 #include "bandwidthscheduler.h"
+#include "common.h"
+#include "customstorage.h"
 #include "filterparserthread.h"
 #include "ltunderlyingtype.h"
 #include "magneturi.h"
@@ -2541,6 +2543,8 @@ bool Session::addTorrent_impl(CreateTorrentParams params, const MagnetUri &magne
     p.max_connections = maxConnectionsPerTorrent();
     p.max_uploads = maxUploadsPerTorrent();
 
+    p.storage = customStorageConstructor;
+
     m_addingTorrents.insert(hash, params);
     // Adding torrent to BitTorrent session
     m_nativeSession->async_add_torrent(p);
@@ -2613,21 +2617,23 @@ bool Session::loadMetadata(const MagnetUri &magnetUri)
     const QString savePath = Utils::Fs::tempPath() + static_cast<QString>(hash);
     p.save_path = Utils::Fs::toNativePath(savePath).toStdString();
 
-    // Forced start
 #if (LIBTORRENT_VERSION_NUM < 10200)
+    // Forced start
     p.flags &= ~lt::add_torrent_params::flag_paused;
     p.flags &= ~lt::add_torrent_params::flag_auto_managed;
-#else
-    p.flags &= ~lt::torrent_flags::paused;
-    p.flags &= ~lt::torrent_flags::auto_managed;
-#endif
 
     // Solution to avoid accidental file writes
-#if (LIBTORRENT_VERSION_NUM < 10200)
     p.flags |= lt::add_torrent_params::flag_upload_mode;
 #else
+    // Forced start
+    p.flags &= ~lt::torrent_flags::paused;
+    p.flags &= ~lt::torrent_flags::auto_managed;
+
+    // Solution to avoid accidental file writes
     p.flags |= lt::torrent_flags::upload_mode;
-#endif
+
+    p.storage = customStorageConstructor;
+#endif    
 
     // Adding torrent to BitTorrent session
     lt::error_code ec;
@@ -4764,8 +4770,9 @@ void Session::handleTorrentDeletedAlert(const lt::torrent_deleted_alert *p)
     if (removingTorrentDataIter == m_removingTorrents.end())
         return;
 
-    Q_ASSERT(removingTorrentDataIter->pathsToRemove.count() == 1);
-    Utils::Fs::smartRemoveEmptyFolderTree(removingTorrentDataIter->pathsToRemove.first());
+    Q_ASSERT(removingTorrentDataIter->pathsToRemove.count() <= 1);
+    if (!removingTorrentDataIter->pathsToRemove.isEmpty())
+        Utils::Fs::smartRemoveEmptyFolderTree(removingTorrentDataIter->pathsToRemove.first());
     LogMsg(tr("'%1' was removed from the transfer list and hard disk.", "'xxx.avi' was removed...").arg(removingTorrentDataIter->name));
     m_removingTorrents.erase(removingTorrentDataIter);
 }
@@ -4780,8 +4787,9 @@ void Session::handleTorrentDeleteFailedAlert(const lt::torrent_delete_failed_ale
 
     // libtorrent won't delete the directory if it contains files not listed in the torrent,
     // so we remove the directory ourselves
-    Q_ASSERT(removingTorrentDataIter->pathsToRemove.count() == 1);
-    Utils::Fs::smartRemoveEmptyFolderTree(removingTorrentDataIter->pathsToRemove.first());
+    Q_ASSERT(removingTorrentDataIter->pathsToRemove.count() <= 1);
+    if (!removingTorrentDataIter->pathsToRemove.isEmpty())
+        Utils::Fs::smartRemoveEmptyFolderTree(removingTorrentDataIter->pathsToRemove.first());
 
     if (p->error) {
         LogMsg(tr("'%1' was removed from the transfer list but the files couldn't be deleted. Error: %2", "'xxx.avi' was removed...")
