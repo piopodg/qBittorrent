@@ -59,19 +59,20 @@ int TrackerEntry::tier() const
 
 TrackerEntry::Status TrackerEntry::status() const
 {
-#if (LIBTORRENT_VERSION_NUM < 10200)
-    if (nativeEntry().fails > 0)
-        return NotWorking;
-
-    if (nativeEntry().updating)
-        return Updating;
-#else
     const auto &endpoints = nativeEntry().endpoints;
 
     const bool allFailed = !endpoints.empty() && std::all_of(endpoints.begin(), endpoints.end()
         , [](const lt::announce_endpoint &endpoint)
     {
+#if (LIBTORRENT_VERSION_NUM >= 20000)
+        return std::all_of(endpoint.info_hashes.begin(), endpoint.info_hashes.end()
+            , [](const lt::announce_infohash &infohash)
+            {
+                return (infohash.fails > 0);
+            });
+#else
         return (endpoint.fails > 0);
+#endif
     });
     if (allFailed)
         return NotWorking;
@@ -79,11 +80,18 @@ TrackerEntry::Status TrackerEntry::status() const
     const bool isUpdating = std::any_of(endpoints.begin(), endpoints.end()
         , [](const lt::announce_endpoint &endpoint)
     {
+#if (LIBTORRENT_VERSION_NUM >= 20000)
+        return std::any_of(endpoint.info_hashes.begin(), endpoint.info_hashes.end()
+            , [](const lt::announce_infohash &infohash)
+            {
+                return infohash.updating;
+            });
+#else
         return endpoint.updating;
+#endif
     });
     if (isUpdating)
         return Updating;
-#endif
 
     if (!nativeEntry().verified)
         return NotContacted;
@@ -98,38 +106,44 @@ void TrackerEntry::setTier(const int value)
 
 int TrackerEntry::numSeeds() const
 {
-#if (LIBTORRENT_VERSION_NUM < 10200)
-    return nativeEntry().scrape_complete;
-#else
     int value = -1;
-    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints)
+    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints) {
+#if (LIBTORRENT_VERSION_NUM >= 20000)
+        for (const lt::announce_infohash &infoHash : endpoint.info_hashes)
+            value = std::max(value, infoHash.scrape_complete);
+#else
         value = std::max(value, endpoint.scrape_complete);
-    return value;
 #endif
+    }
+    return value;
 }
 
 int TrackerEntry::numLeeches() const
 {
-#if (LIBTORRENT_VERSION_NUM < 10200)
-    return nativeEntry().scrape_incomplete;
-#else
     int value = -1;
-    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints)
+    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints) {
+#if (LIBTORRENT_VERSION_NUM >= 20000)
+        for (const lt::announce_infohash &infoHash : endpoint.info_hashes)
+            value = std::max(value, infoHash.scrape_incomplete);
+#else
         value = std::max(value, endpoint.scrape_incomplete);
-    return value;
 #endif
+    }
+    return value;
 }
 
 int TrackerEntry::numDownloaded() const
 {
-#if (LIBTORRENT_VERSION_NUM < 10200)
-    return nativeEntry().scrape_downloaded;
-#else
     int value = -1;
-    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints)
+    for (const lt::announce_endpoint &endpoint : nativeEntry().endpoints) {
+#if (LIBTORRENT_VERSION_NUM >= 20000)
+        for (const lt::announce_infohash &infoHash : endpoint.info_hashes)
+            value = std::max(value, infoHash.scrape_downloaded);
+#else
         value = std::max(value, endpoint.scrape_downloaded);
-    return value;
 #endif
+    }
+    return value;
 }
 
 const lt::announce_entry &TrackerEntry::nativeEntry() const
