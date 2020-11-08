@@ -601,9 +601,9 @@ void TorrentsController::addAction()
     }
 
     if (partialSuccess)
-        setResult("Ok.");
+        setResult(QLatin1String("Ok."));
     else
-        setResult("Fails.");
+        setResult(QLatin1String("Fails."));
 }
 
 void TorrentsController::addTrackersAction()
@@ -888,7 +888,10 @@ void TorrentsController::setForceStartAction()
 
     const bool value {parseBool(params()["value"], false)};
     const QStringList hashes {params()["hashes"].split('|')};
-    applyToTorrents(hashes, [value](BitTorrent::TorrentHandle *const torrent) { torrent->resume(value); });
+    applyToTorrents(hashes, [value](BitTorrent::TorrentHandle *const torrent)
+    {
+        torrent->resume(value ? BitTorrent::TorrentOperatingMode::Forced : BitTorrent::TorrentOperatingMode::AutoManaged);
+    });
 }
 
 void TorrentsController::deleteAction()

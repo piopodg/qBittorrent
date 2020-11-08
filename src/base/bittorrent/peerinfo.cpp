@@ -28,8 +28,6 @@
 
 #include "peerinfo.h"
 
-#include <libtorrent/version.hpp>
-
 #include <QBitArray>
 
 #include "base/bittorrent/torrenthandle.h"
@@ -61,14 +59,12 @@ bool PeerInfo::fromLSD() const
     return static_cast<bool>(m_nativeInfo.source & lt::peer_info::lsd);
 }
 
-#ifndef DISABLE_COUNTRIES_RESOLUTION
 QString PeerInfo::country() const
 {
     if (m_country.isEmpty())
         m_country = Net::GeoIPManager::instance()->lookup(address().ip);
     return m_country;
 }
-#endif
 
 bool PeerInfo::isInteresting() const
 {
@@ -211,15 +207,9 @@ qlonglong PeerInfo::totalDownload() const
 
 QBitArray PeerInfo::pieces() const
 {
-#if (LIBTORRENT_VERSION_NUM < 10200)
-    using PieceIndex = int;
-#else
-    using PieceIndex = lt::piece_index_t;
-#endif
-
     QBitArray result(m_nativeInfo.pieces.size());
     for (int i = 0; i < result.size(); ++i) {
-        if (m_nativeInfo.pieces[PieceIndex {i}])
+        if (m_nativeInfo.pieces[lt::piece_index_t {i}])
             result.setBit(i, true);
     }
     return result;
@@ -230,17 +220,9 @@ QString PeerInfo::connectionType() const
     if (m_nativeInfo.flags & lt::peer_info::utp_socket)
         return QString::fromUtf8(C_UTP);
 
-    QString connection;
-    switch (m_nativeInfo.connection_type) {
-    case lt::peer_info::http_seed:
-    case lt::peer_info::web_seed:
-        connection = "Web";
-        break;
-    default:
-        connection = "BT";
-    }
-
-    return connection;
+    return (m_nativeInfo.connection_type == lt::peer_info::standard_bittorrent)
+        ? QLatin1String {"BT"}
+        : QLatin1String {"Web"};
 }
 
 void PeerInfo::calcRelevance(const TorrentHandle *torrent)

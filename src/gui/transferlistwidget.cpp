@@ -332,13 +332,8 @@ void TransferListWidget::setSelectedTorrentsLocation()
     if (newLocation.isEmpty() || !QDir(newLocation).exists()) return;
 
     // Actually move storage
-    for (BitTorrent::TorrentHandle *const torrent : torrents) {
-        Logger::instance()->addMessage(tr("Set location: moving \"%1\", from \"%2\" to \"%3\""
-            , "Set location: moving \"ubuntu_16_04.iso\", from \"/home/dir1\" to \"/home/dir2\"")
-            .arg(torrent->name(), Utils::Fs::toNativePath(torrent->savePath())
-                , Utils::Fs::toNativePath(newLocation)));
+    for (BitTorrent::TorrentHandle *const torrent : torrents)
         torrent->move(Utils::Fs::expandPathAbs(newLocation));
-    }
 }
 
 void TransferListWidget::pauseAllTorrents()
@@ -362,7 +357,7 @@ void TransferListWidget::startSelectedTorrents()
 void TransferListWidget::forceStartSelectedTorrents()
 {
     for (BitTorrent::TorrentHandle *const torrent : asConst(getSelectedTorrents()))
-        torrent->resume(true);
+        torrent->resume(BitTorrent::TorrentOperatingMode::Forced);
 }
 
 void TransferListWidget::startVisibleTorrents()
@@ -970,14 +965,24 @@ void TransferListWidget::displayListMenu(const QPoint &)
                     allSameSuperSeeding = false;
             }
         }
+
         if (!torrent->isForced())
             needsForce = true;
         else
             needsStart = true;
+
         if (torrent->isPaused())
             needsStart = true;
         else
             needsPause = true;
+
+        if (torrent->isErrored() || torrent->hasMissingFiles()) {
+            // If torrent is in "errored" or "missing files" state
+            // it cannot keep further processing until you restart it.
+            needsStart = true;
+            needsForce = true;
+        }
+
         if (torrent->hasMetadata())
             needsPreview = true;
 
