@@ -81,6 +81,7 @@
 
 #include "base/algorithm.h"
 #include "base/freediskspacechecker.h"
+#include "base/bittorrent/scheduler/bandwidthscheduler.h"
 #include "base/global.h"
 #include "base/logger.h"
 #include "base/net/downloadmanager.h"
@@ -95,7 +96,6 @@
 #include "base/utils/random.h"
 #include "base/utils/string.h"
 #include "base/version.h"
-#include "bandwidthscheduler.h"
 #include "bencoderesumedatastorage.h"
 #include "customstorage.h"
 #include "dbresumedatastorage.h"
@@ -633,11 +633,13 @@ SessionImpl::SessionImpl(QObject *parent)
             processTorrentShareLimits(torrent);
     });
 
+    initializeBandwidthScheduler();
+
     initializeNativeSession();
     configureComponents();
 
     if (isBandwidthSchedulerEnabled())
-        enableBandwidthScheduler();
+        m_bwScheduler->start();
 
     loadCategories();
 
@@ -1314,6 +1316,14 @@ void SessionImpl::setTrackerEnabled(const bool enabled)
 
 void SessionImpl::applyBandwidthLimits()
 {
+    ScheduleDay *today = m_bwScheduler->today(true);
+    int index = today->getNowIndex();
+
+    if (index > -1 && today->entries().at(index).pause)
+        m_nativeSession->pause();
+    else
+        m_nativeSession->resume();
+
     lt::settings_pack settingsPack;
     settingsPack.set_int(lt::settings_pack::download_rate_limit, downloadSpeedLimit());
     settingsPack.set_int(lt::settings_pack::upload_rate_limit, uploadSpeedLimit());
@@ -2341,15 +2351,14 @@ void SessionImpl::enableTracker(const bool enable)
     }
 }
 
-void SessionImpl::enableBandwidthScheduler()
+void SessionImpl::initializeBandwidthScheduler()
 {
     if (!m_bwScheduler)
     {
         m_bwScheduler = new BandwidthScheduler(this);
-        connect(m_bwScheduler.data(), &BandwidthScheduler::bandwidthLimitRequested
-                , this, &SessionImpl::setAltGlobalSpeedLimitEnabled);
+        connect(m_bwScheduler.data(), &BandwidthScheduler::limitChangeRequested,
+            this, &SessionImpl::applyBandwidthLimits);
     }
-    m_bwScheduler->start();
 }
 
 void SessionImpl::populateAdditionalTrackers()
@@ -3587,9 +3596,22 @@ void SessionImpl::setAltGlobalUploadSpeedLimit(const int limit)
 
 int SessionImpl::downloadSpeedLimit() const
 {
-    return isAltGlobalSpeedLimitEnabled()
-            ? altGlobalDownloadSpeedLimit()
-            : globalDownloadSpeedLimit();
+    if (isAltGlobalSpeedLimitEnabled())
+        return altGlobalDownloadSpeedLimit();
+
+    if (m_isBandwidthSchedulerEnabled)
+    {
+        ScheduleDay *today = m_bwScheduler->today(true);
+        int index = today->getNowIndex();
+        if (index > -1)
+        {
+            int dl = today->entries().at(index).downloadSpeed * 1024;
+            return (globalDownloadSpeedLimit() == 0) ? dl
+                : qMin(globalDownloadSpeedLimit(), dl);
+        }
+    }
+
+    return globalUploadSpeedLimit();
 }
 
 void SessionImpl::setDownloadSpeedLimit(const int limit)
@@ -3602,9 +3624,22 @@ void SessionImpl::setDownloadSpeedLimit(const int limit)
 
 int SessionImpl::uploadSpeedLimit() const
 {
-    return isAltGlobalSpeedLimitEnabled()
-            ? altGlobalUploadSpeedLimit()
-            : globalUploadSpeedLimit();
+    if (isAltGlobalSpeedLimitEnabled())
+        return altGlobalUploadSpeedLimit();
+
+    if (m_isBandwidthSchedulerEnabled)
+    {
+        ScheduleDay *today = m_bwScheduler->today(true);
+        int index = today->getNowIndex();
+        if (index > -1)
+        {
+            int ul = today->entries().at(index).uploadSpeed * 1024;
+            return (globalUploadSpeedLimit() == 0) ? ul
+                : qMin(globalUploadSpeedLimit(), ul);
+        }
+    }
+
+    return globalUploadSpeedLimit();
 }
 
 void SessionImpl::setUploadSpeedLimit(const int limit)
@@ -3642,9 +3677,9 @@ void SessionImpl::setBandwidthSchedulerEnabled(const bool enabled)
     {
         m_isBandwidthSchedulerEnabled = enabled;
         if (enabled)
-            enableBandwidthScheduler();
+            m_bwScheduler->start();
         else
-            delete m_bwScheduler;
+            m_bwScheduler->stop();
     }
 }
 
@@ -5207,6 +5242,11 @@ void SessionImpl::setTrackerFilteringEnabled(const bool enabled)
 QString SessionImpl::lastExternalIPv4Address() const
 {
     return m_lastExternalIPv4Address;
+}
+
+bool SessionImpl::isPaused() const
+{
+    return m_nativeSession->is_paused();
 }
 
 QString SessionImpl::lastExternalIPv6Address() const

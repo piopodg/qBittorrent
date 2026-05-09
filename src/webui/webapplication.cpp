@@ -62,6 +62,7 @@
 #include "api/clientdatacontroller.h"
 #include "api/logcontroller.h"
 #include "api/rsscontroller.h"
+#include "api/schedulecontroller.h"
 #include "api/searchcontroller.h"
 #include "api/synccontroller.h"
 #include "api/torrentcreatorcontroller.h"
@@ -857,6 +858,7 @@ void WebApplication::sessionStartImpl(const QString &sessionId, const WebSession
     m_currentSession->registerAPIController(u"clientdata"_s, new ClientDataController(m_clientDataStorage, app(), m_currentSession));
     m_currentSession->registerAPIController(u"log"_s, new LogController(app(), m_currentSession));
     m_currentSession->registerAPIController(u"torrentcreator"_s, new TorrentCreatorController(m_torrentCreationManager, app(), m_currentSession));
+    m_currentSession->registerAPIController(u"schedule"_s, new ScheduleController(app(), m_currentSession))
     m_currentSession->registerAPIController(u"rss"_s, new RSSController(app(), m_currentSession));
     m_currentSession->registerAPIController(u"search"_s, new SearchController(app(), m_currentSession));
     m_currentSession->registerAPIController(u"torrents"_s, new TorrentsController(app(), m_currentSession));

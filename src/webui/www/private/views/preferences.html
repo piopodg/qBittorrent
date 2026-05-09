@@ -678,34 +678,18 @@ QBT_TR((best choice if supported))QBT_TR[CONTEXT=OptionsDialog] QBT_TR(Default p
             </tbody>
         </table>
         <i>QBT_TR(0 means unlimited)QBT_TR[CONTEXT=OptionsDialog]</i>
+    </fieldset>
 
-        <fieldset class="settings">
-            <legend>
-                <input type="checkbox" id="limitSchedulingCheckbox" onclick="qBittorrent.Preferences.updateSchedulingEnabled();">
-                <label for="limitSchedulingCheckbox">QBT_TR(Schedule the use of alternative rate limits)QBT_TR[CONTEXT=OptionsDialog]</label>
-            </legend>
-            <div class="formRow">
-                <label id="scheduleFromHourLabel">QBT_TR(From:)QBT_TR[CONTEXT=OptionsDialog]</label>
-                <input type="text" id="schedule_from_hour" aria-labelledby="scheduleFromHourLabel" style="width: 3.6em;">:<input type="text" id="schedule_from_min" aria-labelledby="scheduleFromHourLabel" style="width: 3.6em;">
-                <label id="scheduleToHourLabel">QBT_TR(To:)QBT_TR[CONTEXT=OptionsDialog]</label>
-                <input type="text" id="schedule_to_hour" aria-labelledby="scheduleToHourLabel" style="width: 3.6em;">:<input type="text" id="schedule_to_min" aria-labelledby="scheduleToHourLabel" style="width: 3.6em;">
-            </div>
-            <div class="formRow">
-                <label for="schedule_freq_select">QBT_TR(When:)QBT_TR[CONTEXT=OptionsDialog]</label>
-                <select id="schedule_freq_select">
-                    <option value="0">QBT_TR(Every day)QBT_TR[CONTEXT=OptionsDialog]</option>
-                    <option value="1">QBT_TR(Weekdays)QBT_TR[CONTEXT=OptionsDialog]</option>
-                    <option value="2">QBT_TR(Weekends)QBT_TR[CONTEXT=OptionsDialog]</option>
-                    <option value="3">QBT_TR(Monday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="4">QBT_TR(Tuesday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="5">QBT_TR(Wednesday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="6">QBT_TR(Thursday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="7">QBT_TR(Friday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="8">QBT_TR(Saturday)QBT_TR[CONTEXT=HttpServer]</option>
-                    <option value="9">QBT_TR(Sunday)QBT_TR[CONTEXT=HttpServer]</option>
-                </select>
-            </div>
-        </fieldset>
+    <fieldset class="settings">
+        <legend>
+            <input type="checkbox" id="limitSchedulingCheckbox" onclick="qBittorrent.Preferences.updateSchedulingEnabled();" />
+            <label for="limitSchedulingCheckbox">QBT_TR(Enable scheduler)QBT_TR[CONTEXT=OptionsDialog]</label>
+        </legend>
+        <div class="toolbarTabs">
+            <ul id="schedulerTabsList" class="tab-menu"></ul>
+            <div class="clear"></div>
+        </div>
+        <div id="schedulerDiv"></div>
     </fieldset>
 
     <fieldset class="settings">
@@ -2117,13 +2101,252 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
         };
 
         // Speed tab
-        const updateSchedulingEnabled = () => {
-            const isLimitSchedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
-            document.getElementById("schedule_from_hour").disabled = !isLimitSchedulingEnabled;
-            document.getElementById("schedule_from_min").disabled = !isLimitSchedulingEnabled;
-            document.getElementById("schedule_to_hour").disabled = !isLimitSchedulingEnabled;
-            document.getElementById("schedule_to_min").disabled = !isLimitSchedulingEnabled;
-            document.getElementById("schedule_freq_select").disabled = !isLimitSchedulingEnabled;
+        const scheduleDayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+        const scheduleTables = new Hash();
+        let schedule = {};
+        let selectedScheduleDay = 0;
+        let scheduleClipboard = [];
+
+        const updateSchedulingEnabled = function() {
+            const isLimitSchedulingEnabled = $('limitSchedulingCheckbox').getProperty('checked');
+        };
+
+        const initializeSchedulerTables = (scheduleJson, locale, firstDayOfWeek, today) => {
+            const dayTranslations = [
+                'QBT_TR(Monday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Tuesday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Wednesday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Thursday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Friday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Saturday)QBT_TR[CONTEXT=HttpServer]',
+                'QBT_TR(Sunday)QBT_TR[CONTEXT=HttpServer]'
+            ];
+
+            locale = locale.replace('_', '-');
+            schedule = JSON.parse(scheduleJson);
+
+            const updateSchedule = (then) => {
+                new Request({
+                    url: 'api/v2/schedule/getJson',
+                    method: 'get',
+                    noCache: true,
+                    onSuccess: (responseJson) => {
+                        schedule = JSON.parse(responseJson);
+
+                        if (then)
+                            then();
+                    },
+                    onFailure: console.error
+                }).send();
+            };
+
+            const updateScheduleTable = (day) => {
+                scheduleTables[day].clear();
+                schedule[scheduleDayKeys[day]].forEach((entry, i) => {
+                    entry.rowId = i;
+                    scheduleTables[day].updateRowData(entry, true);
+                });
+                scheduleTables[day].updateTable(true);
+                scheduleTables[day].altRow();
+            };
+
+            const contextMenu = new window.qBittorrent.ContextMenu.ContextMenu({
+                targets: '#schedulerDiv',
+                menu: 'scheduleEntryMenu',
+                offsets: {
+                    x: -15,
+                    y: 2
+                },
+                actions: {
+                    addEntry: (element, ref) => {
+                        const day = selectedScheduleDay;
+                        new MochaUI.Window({
+                            id: 'scheduleentrydialog',
+                            title: 'QBT_TR(Add scheduled speed limit)QBT_TR[CONTEXT=ScheduleEntryDialog]',
+                            loadMethod: 'iframe',
+                            contentURL: new URI('addscheduleentry.html').setData('day', day).toString(),
+                            padding: 8,
+                            maximizable: false,
+                            scrollbars: false,
+                            width: 370,
+                            height: 120,
+                            onClose: (e) => updateSchedule(() => updateScheduleTable(day))
+                        });
+                    },
+                    removeEntry: (element, ref) => {
+                        const day = selectedScheduleDay;
+                        const selectedRows = scheduleTables[day].selectedRows.slice();
+
+                        if (selectedRows.length === 0)
+                            return;
+
+                        new Request({
+                            url: 'api/v2/schedule/removeEntry',
+                            method: 'post',
+                            noCache: true,
+                            data: {
+                                day: day,
+                                indexes: selectedRows.toString()
+                            },
+                            onSuccess: (e) => {
+                                selectedRows.map(Number).sort((l, r) => l < r)
+                                    .forEach(i => schedule[scheduleDayKeys[day]].splice(i, 1));
+                                updateScheduleTable(day);
+                            },
+                            onFailure: console.error
+                        }).send();
+                    },
+                    copy: (element, ref) => {
+                        const indexes = scheduleTables[selectedScheduleDay].selectedRows.slice();
+                        const day = schedule[scheduleDayKeys[selectedScheduleDay]];
+                        scheduleClipboard = indexes.map((entryIndex) => day[entryIndex]);
+                    },
+                    paste: (element, ref) => {
+                        const targetDay = selectedScheduleDay;
+                        if (Array.isArray(scheduleClipboard) && scheduleClipboard.length) {
+                            new Request({
+                                url: 'api/v2/schedule/paste',
+                                method: 'post',
+                                noCache: true,
+                                data: {
+                                    entries: JSON.stringify(scheduleClipboard),
+                                    targetDay: targetDay
+                                },
+                                onSuccess: () => updateSchedule(() => updateScheduleTable(targetDay)),
+                                onFailure: console.error
+                            }).send();
+                        }
+                    },
+                    copyToOtherDays: (element, ref) => {
+                        const day = selectedScheduleDay;
+                        const selectedRows = scheduleTables[day].selectedRows.slice();
+
+                        if (selectedRows.length === 0)
+                            return;
+
+                        new Request({
+                            url: 'api/v2/schedule/copyToOtherDays',
+                            method: 'post',
+                            noCache: true,
+                            data: {
+                                sourceDay: day,
+                                indexes: selectedRows.toString()
+                            },
+                            onSuccess: () => updateSchedule(() => {
+                                for (let i = 0; i < 7; ++i)
+                                    updateScheduleTable(i);
+                            }),
+                            onFailure: console.error
+                        }).send();
+                    },
+                    clearAll: (element, ref) => {
+                        const day = selectedScheduleDay;
+                        new Request({
+                            url: 'api/v2/schedule/clearDay',
+                            method: 'post',
+                            noCache: true,
+                            data: {
+                                day: day
+                            },
+                            onSuccess: () => {
+                                schedule[scheduleDayKeys[day]] = [];
+                                scheduleTables[day].clear();
+                            },
+                            onFailure: console.error
+                        }).send();
+                    }
+                },
+                onShow: function() {
+                    const dynamicTable = scheduleTables[selectedScheduleDay];
+                    const all = dynamicTable.tableBody.getElements('tr');
+                    const selected = dynamicTable.selectedRows.slice();
+
+                    if (all.length > 0)
+                        this.showItem('clearAll');
+                    else
+                        this.hideItem('clearAll');
+
+                    if (selected.length > 0) {
+                        this.showItem('removeEntry');
+                        this.showItem('copy');
+                        this.showItem('copyToOtherDays');
+                    }
+                    else {
+                        this.hideItem('removeEntry');
+                        this.hideItem('copy');
+                        this.hideItem('copyToOtherDays');
+                    }
+
+                    if (scheduleClipboard !== [])
+                        this.showItem('paste');
+                    else
+                        this.hideItem('paste');
+                }
+            });
+
+            for (let i = 0; i < 7; ++i) {
+                const day = (firstDayOfWeek + i) % 7;
+
+                // Create the day tab
+                const listItem = new Element('li');
+                listItem.append(new Element('a', { text: dayTranslations[day] }));
+                $('schedulerTabsList').append(listItem);
+
+                const dayTab = new Element('div.scheduleDayTab.invisible');
+                const tabContent = new Element('div.formRow');
+                dayTab.append(tabContent);
+                $('schedulerDiv').append(dayTab);
+
+                if (day == today) {
+                    listItem.addClass('selected');
+                    dayTab.removeClass('invisible');
+                    selectedScheduleDay = day;
+                }
+
+                listItem.addEvent('click', (e) => {
+                    $$('.scheduleDayTab').addClass('invisible');
+                    dayTab.removeClass('invisible');
+
+                    scheduleTables[selectedScheduleDay].deselectAll();
+                    selectedScheduleDay = day;
+                    scheduleTables[day].reloadHeaders();
+                });
+
+                dayTab.addEvent('click', (e) => scheduleTables[day].deselectAll());
+
+                // Set up table divs
+                const headerDiv = new Element('div.dynamicTableFixedHeaderDiv', {
+                    id: 'scheduleTableFixedHeaderDiv' + day
+                });
+                const headerTable = new Element('table.dynamicTable', {
+                    style: 'position:relative;'
+                });
+                headerDiv.append(headerTable);
+                headerTable.createTHead().insertRow().class = 'dynamicTableHeader';
+
+                const tableDiv = new Element('div.dynamicTableDiv', {
+                    id: 'scheduleTableDiv' + day,
+                    style: 'min-height: 4em; max-height: 16em;'
+                });
+                const table = new Element('table.dynamicTable.unselectable');
+                tableDiv.append(table);
+                table.createTHead().insertRow().class = 'dynamicTableHeader';
+                table.createTBody();
+
+                tabContent.append(headerDiv);
+                tabContent.append(tableDiv);
+
+                // Create dynamicTable
+                let dynamicTable = new window.qBittorrent.DynamicTable.ScheduleTable();
+                dynamicTable.locale = locale;
+                dynamicTable.setup(tableDiv.id, headerDiv.id, contextMenu);
+                scheduleTables[day] = dynamicTable;
+
+                // Populate the list
+                updateScheduleTable(day);
+            }
+
+            MochaUI.initializeTabs('schedulerTabsList');
         };
 
         // Bittorrent tab
@@ -2560,14 +2783,10 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
                     document.getElementById("limit_tcp_overhead_checkbox").checked = pref.limit_tcp_overhead;
                     document.getElementById("limit_lan_peers_checkbox").checked = pref.limit_lan_peers;
 
-                    // Scheduling
-                    document.getElementById("limitSchedulingCheckbox").checked = pref.scheduler_enabled;
-                    document.getElementById("schedule_from_hour").value = time_padding(pref.schedule_from_hour);
-                    document.getElementById("schedule_from_min").value = time_padding(pref.schedule_from_min);
-                    document.getElementById("schedule_to_hour").value = time_padding(pref.schedule_to_hour);
-                    document.getElementById("schedule_to_min").value = time_padding(pref.schedule_to_min);
-                    document.getElementById("schedule_freq_select").value = pref.scheduler_days;
-                    updateSchedulingEnabled();
+                        // Scheduling
+                        initializeSchedulerTables(pref.scheduler_json, pref.locale, pref.locale_first_day, pref.current_day_of_week);
+                        $('limitSchedulingCheckbox').setProperty('checked', pref.scheduler_enabled);
+                        updateSchedulingEnabled();
 
                     // Bittorrent tab
                     // Privacy
@@ -2980,14 +3199,7 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
 
             // Scheduler
             const schedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
-            settings["scheduler_enabled"] = schedulingEnabled;
-            if (schedulingEnabled) {
-                settings["schedule_from_hour"] = Number(document.getElementById("schedule_from_hour").value);
-                settings["schedule_from_min"] = Number(document.getElementById("schedule_from_min").value);
-                settings["schedule_to_hour"] = Number(document.getElementById("schedule_to_hour").value);
-                settings["schedule_to_min"] = Number(document.getElementById("schedule_to_min").value);
-                settings["scheduler_days"] = Number(document.getElementById("schedule_freq_select").value);
-            }
+            settings.set('scheduler_enabled', scheduling_enabled);
 
             // Bittorrent tab
             // Privacy

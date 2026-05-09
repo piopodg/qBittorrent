@@ -20,6 +20,7 @@ qt_wrap_ui(UI_HEADERS
     rss/automatedrssdownloader.ui
     rss/rssfeeddialog.ui
     rss/rsswidget.ui
+    scheduleentrydialog.ui
     search/pluginselectdialog.ui
     search/pluginsourcedialog.ui
     search/searchjobwidget.ui
@@ -92,6 +93,8 @@ add_library(qbt_gui STATIC
     rss/htmlbrowser.h
     rss/rssfeeddialog.h
     rss/rsswidget.h
+    scheduleentrydialog.h
+    scheduleentryitemdelegate.h
     search/pluginselectdialog.h
     search/pluginsourcedialog.h
     search/searchjobwidget.h
@@ -196,6 +199,8 @@ add_library(qbt_gui STATIC
     rss/htmlbrowser.cpp
     rss/rssfeeddialog.cpp
     rss/rsswidget.cpp
+    scheduleentrydialog.cpp
+    scheduleentryitemdelegate.cpp
     search/pluginselectdialog.cpp
     search/pluginsourcedialog.cpp
     search/searchjobwidget.cpp

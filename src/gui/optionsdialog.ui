@@ -1247,8 +1247,7 @@
                    <item>
                     <widget class="QComboBox" name="comboSavingMode">
                      <property name="toolTip">
-                      <string>Automatic: Various torrent properties (e.g. save path) will be decided by the associated category
-Manual: Various torrent properties (e.g. save path) must be assigned manually</string>
+                      <string>Automatic: Various torrent properties (e.g. save path) will be decided by the associated category Manual: Various torrent properties (e.g. save path) must be assigned manually</string>
                      </property>
                      <item>
                       <property name="text">
@@ -2465,7 +2464,7 @@ readme[0-9].txt: filter 'readme1.txt', 'readme2.txt' but not 'readme10.txt'.</st
                 </widget>
                </item>
                <item row="1" column="2">
-                <widget class="QSpinBox" name="spinDownloadLimit">
+                <widget class="QSpinBox" name="spinUploadLimit">
                  <property name="specialValueText">
                   <string>∞</string>
                  </property>
@@ -2534,8 +2533,15 @@ readme[0-9].txt: filter 'readme1.txt', 'readme2.txt' but not 'readme10.txt'.</st
                  </property>
                 </spacer>
                </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Upload:</string>
+                 </property>
+                </widget>
+               </item>
                <item row="1" column="1">
-                <widget class="QLabel" name="label_14">
+                <widget class="QLabel" name="label_11">
                  <property name="text">
                   <string>Download:</string>
                  </property>
@@ -2679,6 +2685,16 @@ readme[0-9].txt: filter 'readme1.txt', 'readme2.txt' but not 'readme10.txt'.</st
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkScheduleEnable">
+              <property name="text">
+               <string>Enable scheduler</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTabWidget" name="tabSchedule"/>
             </item>
             <item>
              <widget class="QGroupBox" name="rateLimitsGroupBox">
@@ -4158,8 +4174,7 @@ Specify an IPv4 or IPv6 address. You can specify &quot;0.0.0.0&quot; for any IPv
                           <string>Whitelist for filtering HTTP Host header values.
 In order to defend against DNS rebinding attack,
 you should put in domain names used by WebUI server.
-
-Use ';' to split multiple entries. Can use wildcard '*'.</string>
+ Use ';' to split multiple entries. Can use wildcard '*'.</string>
                          </property>
                         </widget>
                        </item>
