@@ -815,14 +815,15 @@ void AppController::setPreferencesAction()
     //incoming
     BandwidthScheduler::instance()->commitSchedule(true);
     //current
-    if (const auto hourIter = m.constFind(u"schedule_from_hour"_s), minIter = m.constFind(u"schedule_from_min"_s)
+    //FIXME this can probably be deleted
+/*     if (const auto hourIter = m.constFind(u"schedule_from_hour"_s), minIter = m.constFind(u"schedule_from_min"_s)
         ; (hourIter != m.constEnd()) && (minIter != m.constEnd()))
         pref->setSchedulerStartTime({hourIter.value().toInt(), minIter.value().toInt()});
     if (const auto hourIter = m.constFind(u"schedule_to_hour"_s), minIter = m.constFind(u"schedule_to_min"_s)
         ; (hourIter != m.constEnd()) && (minIter != m.constEnd()))
         pref->setSchedulerEndTime({hourIter.value().toInt(), minIter.value().toInt()});
     if (hasKey(u"scheduler_days"_s))
-        pref->setSchedulerDays(static_cast<Scheduler::Days>(it.value().toInt()));
+        pref->setSchedulerDays(static_cast<Scheduler::Days>(it.value().toInt())); */
 
     // Bittorrent
     // Privacy

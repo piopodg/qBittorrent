@@ -438,7 +438,6 @@ namespace BitTorrent
         const SessionStatus &status() const override;
         const CacheStatus &cacheStatus() const override;
         bool isListening() const override;
-        bool isPaused() const override;
 
         void banIP(const QString &ip) override;
 

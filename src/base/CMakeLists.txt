@@ -9,7 +9,6 @@ add_library(qbt_base STATIC
     bittorrent/addtorrenterror.h
     bittorrent/addtorrentparams.h
     bittorrent/announcetimepoint.h
-    bittorrent/bandwidthscheduler.h
     bittorrent/bencoderesumedatastorage.h
     bittorrent/cachestatus.h
     bittorrent/categoryoptions.h

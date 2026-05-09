@@ -1476,7 +1476,6 @@ void MainWindow::loadSessionStats()
     const BitTorrent::SessionStatus &status = btSession->status();
     m_downloadRate = Utils::Misc::friendlyUnit(status.payloadDownloadRate, true);
     m_uploadRate = Utils::Misc::friendlyUnit(status.payloadUploadRate, true);
-    const bool isPaused = BitTorrent::Session::instance()->isPaused();
 
     // update global information
 #ifdef Q_OS_MACOS

@@ -35,11 +35,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPointer>
+#include <QFile>
 
 #include "base/logger.h"
 #include "base/preferences.h"
 #include "base/profile.h"
 #include "base/utils/fs.h"
+#include "base/exceptions.h"
 
 using namespace std::chrono_literals;
 
@@ -59,12 +61,13 @@ BandwidthScheduler::BandwidthScheduler(QObject *parent)
 
     m_fileStorage->moveToThread(m_ioThread);
     connect(m_ioThread, &QThread::finished, m_fileStorage, &AsyncFileStorage::deleteLater);
-    connect(m_fileStorage, &AsyncFileStorage::failed, [](const Path &fileName, const QString &errorString)
+    //FIXME check whats wrong here later
+    /* connect(m_fileStorage, &AsyncFileStorage::failed, [](const Path &fileName, const QString &errorString)
     {
         LogMsg(tr("Couldn't save scheduler data in %1. Error: %2")
                 .arg(fileName.toString(), errorString), Log::CRITICAL);
     });
-
+ */
     m_ioThread->start();
 
     if (!loadScheduleFromDisk())

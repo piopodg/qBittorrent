@@ -3521,7 +3521,7 @@ const ScheduleTable = new Class({
             column['title'] = name;
             column['caption'] = caption;
             column['style'] = style;
-            column['width'] = LocalPreferences.get('column_' + name + '_width_scheduleTableDiv', defaultWidth);
+            column['width'] = 20 //LocalPreferences.get('column_' + name + '_width_scheduleTableDiv', 20);
 
             column['dataProperties'] = [name];
             column['getRowValue'] = function(row, pos) {

@@ -5244,11 +5244,6 @@ QString SessionImpl::lastExternalIPv4Address() const
     return m_lastExternalIPv4Address;
 }
 
-bool SessionImpl::isPaused() const
-{
-    return m_nativeSession->is_paused();
-}
-
 QString SessionImpl::lastExternalIPv6Address() const
 {
     return m_lastExternalIPv6Address;
