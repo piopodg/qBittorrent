@@ -1,4 +1,6 @@
 .vscode/
+.cache/
+.zed/
 
 src/gui/geoip/GeoIP.dat
 src/gui/geoip/GeoIP.dat.gz
@@ -41,3 +43,7 @@ src/icons/skin/build-icons/icons/*.png
 
 # CMake build directory
 build/
+
+
+# clang cache
+.cache

@@ -1082,6 +1082,7 @@ void OptionsDialog::loadSpeedTabOptions()
     m_ui->timeEditScheduleFrom->setTime(pref->getSchedulerStartTime());
     m_ui->timeEditScheduleTo->setTime(pref->getSchedulerEndTime());
     m_ui->comboBoxScheduleDays->setCurrentIndex(static_cast<int>(pref->getSchedulerDays()));
+    m_ui->checkBoxPauseSessionSchedule->setChecked(session->isPauseSessionScheduleEnabled());
 
     m_ui->checkLimituTPConnections->setChecked(session->isUTPRateLimited());
     m_ui->checkLimitTransportOverhead->setChecked(session->includeOverheadInLimits());
@@ -1105,6 +1106,7 @@ void OptionsDialog::loadSpeedTabOptions()
     connect(m_ui->timeEditScheduleFrom, &QDateTimeEdit::timeChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->timeEditScheduleTo, &QDateTimeEdit::timeChanged, this, &ThisType::enableApplyButton);
     connect(m_ui->comboBoxScheduleDays, qComboBoxCurrentIndexChanged, this, &ThisType::enableApplyButton);
+    connect(m_ui->checkBoxPauseSessionSchedule, &QAbstractButton::toggled, this, &ThisType::enableApplyButton);
 
     connect(m_ui->checkLimituTPConnections, &QAbstractButton::toggled, this, &ThisType::enableApplyButton);
     connect(m_ui->checkLimitTransportOverhead, &QAbstractButton::toggled, this, &ThisType::enableApplyButton);
@@ -1131,6 +1133,7 @@ void OptionsDialog::saveSpeedTabOptions() const
     pref->setSchedulerStartTime(m_ui->timeEditScheduleFrom->time());
     pref->setSchedulerEndTime(m_ui->timeEditScheduleTo->time());
     pref->setSchedulerDays(static_cast<Scheduler::Days>(m_ui->comboBoxScheduleDays->currentIndex()));
+    session->setPauseSessionScheduleEnabled(m_ui->checkBoxPauseSessionSchedule->isChecked());
 
     session->setUTPRateLimited(m_ui->checkLimituTPConnections->isChecked());
     session->setIncludeOverheadInLimits(m_ui->checkLimitTransportOverhead->isChecked());
@@ -2283,3 +2286,12 @@ void OptionsDialog::on_IPSubnetWhitelistButton_clicked()
     connect(dialog, &QDialog::accepted, this, &OptionsDialog::enableApplyButton);
     dialog->open();
 }
+
+void OptionsDialog::on_groupBoxSchedule_clicked(bool checked)
+{
+    if(!checked)
+    {
+        m_ui->checkBoxPauseSessionSchedule->setChecked(checked);
+    }
+}
+

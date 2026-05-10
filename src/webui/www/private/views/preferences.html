@@ -698,6 +698,10 @@ QBT_TR((best choice if supported))QBT_TR[CONTEXT=OptionsDialog] QBT_TR(Default p
                 <label id="scheduleToHourLabel">QBT_TR(To:)QBT_TR[CONTEXT=OptionsDialog]</label>
                 <input type="text" id="schedule_to_hour" aria-labelledby="scheduleToHourLabel" style="width: 3.6em;">:<input type="text" id="schedule_to_min" aria-labelledby="scheduleToHourLabel" style="width: 3.6em;">
             </div>
+            <div>
+                <input type="checkbox" id="schedule_pause_session_checkbox">
+                <label for="schedule_pause_session_checkbox">QBT_TR(Schedule Session Pause)QBT_TR[CONTEXT=OptionsDialog]</label>
+            </div>
             <div class="formRow">
                 <label for="schedule_freq_select">QBT_TR(When:)QBT_TR[CONTEXT=OptionsDialog]</label>
                 <select id="schedule_freq_select">
@@ -2133,6 +2137,17 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
         };
 
         // Speed tab
+        const updateSchedulePauseCheckbox = () => {
+            const isLimitSchedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
+            
+            //disable and uncheck when scheduling disabled
+            document.getElementById("schedule_pause_session_checkbox").disabled = !isLimitSchedulingEnabled;
+            if(!isLimitSchedulingEnabled){
+                
+                document.getElementById("schedule_pause_session_checkbox").checked = false;
+            }
+        }
+
         const updateSchedulingEnabled = () => {
             const isLimitSchedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
             document.getElementById("schedule_from_hour").disabled = !isLimitSchedulingEnabled;
@@ -2140,6 +2155,7 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
             document.getElementById("schedule_to_hour").disabled = !isLimitSchedulingEnabled;
             document.getElementById("schedule_to_min").disabled = !isLimitSchedulingEnabled;
             document.getElementById("schedule_freq_select").disabled = !isLimitSchedulingEnabled;
+            updateSchedulePauseCheckbox();
         };
 
         // Bittorrent tab
@@ -2583,6 +2599,7 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
                     document.getElementById("schedule_to_hour").value = time_padding(pref.schedule_to_hour);
                     document.getElementById("schedule_to_min").value = time_padding(pref.schedule_to_min);
                     document.getElementById("schedule_freq_select").value = pref.scheduler_days;
+                    document.getElementById("schedule_pause_session_checkbox").checked = pref.schedule_pause_session;
                     updateSchedulingEnabled();
 
                     // Bittorrent tab
@@ -3004,6 +3021,7 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
                 settings["schedule_to_hour"] = Number(document.getElementById("schedule_to_hour").value);
                 settings["schedule_to_min"] = Number(document.getElementById("schedule_to_min").value);
                 settings["scheduler_days"] = Number(document.getElementById("schedule_freq_select").value);
+                settings["schedule_pause_session"] = document.getElementById("schedule_pause_session_checkbox").checked;
             }
 
             // Bittorrent tab

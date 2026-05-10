@@ -2674,6 +2674,13 @@ readme[0-9].txt: filter 'readme1.txt', 'readme2.txt' but not 'readme10.txt'.</st
                     </item>
                    </widget>
                   </item>
+                  <item row="1" column="4">
+                   <widget class="QCheckBox" name="checkBoxPauseSessionSchedule">
+                    <property name="text">
+                     <string>Pause Session</string>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </widget>
                </item>

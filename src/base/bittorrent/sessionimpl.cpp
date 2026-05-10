@@ -538,6 +538,7 @@ SessionImpl::SessionImpl(QObject *parent)
     , m_altGlobalDownloadSpeedLimit(BITTORRENT_SESSION_KEY(u"AlternativeGlobalDLSpeedLimit"_s), 10, lowerLimited(0))
     , m_altGlobalUploadSpeedLimit(BITTORRENT_SESSION_KEY(u"AlternativeGlobalUPSpeedLimit"_s), 10, lowerLimited(0))
     , m_isAltGlobalSpeedLimitEnabled(BITTORRENT_SESSION_KEY(u"UseAlternativeGlobalSpeedLimit"_s), false)
+    , m_isPauseSessionScheduleEnabled(BITTORRENT_SESSION_KEY(u"PauseSessionSchedule"_s), false)
     , m_isBandwidthSchedulerEnabled(BITTORRENT_SESSION_KEY(u"BandwidthSchedulerEnabled"_s), false)
     , m_isPerformanceWarningEnabled(BITTORRENT_SESSION_KEY(u"PerformanceWarning"_s), false)
     , m_saveResumeDataInterval(BITTORRENT_SESSION_KEY(u"SaveResumeDataInterval"_s), 60)
@@ -1319,6 +1320,36 @@ void SessionImpl::applyBandwidthLimits()
     settingsPack.set_int(lt::settings_pack::download_rate_limit, downloadSpeedLimit());
     settingsPack.set_int(lt::settings_pack::upload_rate_limit, uploadSpeedLimit());
     m_nativeSession->apply_settings(std::move(settingsPack));
+}
+
+void SessionImpl::applySessionState()
+{
+    BitTorrent::Session *const session = BitTorrent::Session::instance();
+
+    if(nullptr == m_nativeSession)
+    {
+        return;
+    }
+
+    if(isAltGlobalSpeedLimitEnabled())
+    {
+        if(isPauseSessionScheduleEnabled())
+        {
+            if(!m_nativeSession->is_paused())
+            {
+                //session->pause();
+                m_nativeSession->pause();
+            }
+        }
+    }
+    else
+    {
+        if(m_nativeSession->is_paused())
+        {
+            m_nativeSession->resume();
+        }
+    }
+
 }
 
 void SessionImpl::configure()
@@ -3629,8 +3660,26 @@ void SessionImpl::setAltGlobalSpeedLimitEnabled(const bool enabled)
     // Save new state to remember it on startup
     m_isAltGlobalSpeedLimitEnabled = enabled;
     applyBandwidthLimits();
+    applySessionState();
     // Notify
     emit speedLimitModeChanged(m_isAltGlobalSpeedLimitEnabled);
+}
+
+bool SessionImpl::isPauseSessionScheduleEnabled() const
+{
+    return m_isPauseSessionScheduleEnabled;
+}
+
+
+void SessionImpl::setPauseSessionScheduleEnabled(const bool enabled)
+{
+    if (enabled == isPauseSessionScheduleEnabled()) return;
+
+    // Save new state to remember it on startup
+    m_isPauseSessionScheduleEnabled = enabled;
+
+    // Notify
+    //emit speedLimitModeChanged(m_isAltGlobalSpeedLimitEnabled);
 }
 
 bool SessionImpl::isBandwidthSchedulerEnabled() const

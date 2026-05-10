@@ -256,6 +256,8 @@ namespace BitTorrent
         virtual void setUploadSpeedLimit(int limit) = 0;
         virtual bool isAltGlobalSpeedLimitEnabled() const = 0;
         virtual void setAltGlobalSpeedLimitEnabled(bool enabled) = 0;
+        virtual bool isPauseSessionScheduleEnabled() const = 0;
+        virtual void setPauseSessionScheduleEnabled(bool enabled) = 0;
         virtual bool isBandwidthSchedulerEnabled() const = 0;
         virtual void setBandwidthSchedulerEnabled(bool enabled) = 0;
 

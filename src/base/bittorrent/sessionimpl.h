@@ -231,6 +231,8 @@ namespace BitTorrent
         void setUploadSpeedLimit(int limit) override;
         bool isAltGlobalSpeedLimitEnabled() const override;
         void setAltGlobalSpeedLimitEnabled(bool enabled) override;
+        bool isPauseSessionScheduleEnabled() const override;
+        void setPauseSessionScheduleEnabled(bool enabled) override;
         bool isBandwidthSchedulerEnabled() const override;
         void setBandwidthSchedulerEnabled(bool enabled) override;
 
@@ -554,6 +556,7 @@ namespace BitTorrent
         void configurePeerClasses();
         void initMetrics();
         void applyBandwidthLimits();
+        void applySessionState();
         void processBannedIPs(lt::ip_filter &filter);
         QStringList getListeningIPs() const;
         void configureListeningInterface();
@@ -732,6 +735,7 @@ namespace BitTorrent
         CachedSettingValue<int> m_altGlobalDownloadSpeedLimit;
         CachedSettingValue<int> m_altGlobalUploadSpeedLimit;
         CachedSettingValue<bool> m_isAltGlobalSpeedLimitEnabled;
+        CachedSettingValue<bool> m_isPauseSessionScheduleEnabled;
         CachedSettingValue<bool> m_isBandwidthSchedulerEnabled;
         CachedSettingValue<bool> m_isPerformanceWarningEnabled;
         CachedSettingValue<int> m_saveResumeDataInterval;

@@ -113,6 +113,8 @@ private slots:
     void setupWebUIAPIKey();
 #endif
 
+    void on_groupBoxSchedule_clicked(bool checked);
+
 private:
     void showEvent(QShowEvent *e) override;
 
