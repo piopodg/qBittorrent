@@ -46,4 +46,4 @@ build/
 
 
 # clang cache
-.cache
+.cache/
