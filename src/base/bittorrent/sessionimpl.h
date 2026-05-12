@@ -556,7 +556,7 @@ namespace BitTorrent
         void configurePeerClasses();
         void initMetrics();
         void applyBandwidthLimits();
-        void applySessionState();
+        void applySessionState(bool scheduled_pause);
         void processBannedIPs(lt::ip_filter &filter);
         QStringList getListeningIPs() const;
         void configureListeningInterface();

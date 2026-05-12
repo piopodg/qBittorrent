@@ -1049,6 +1049,15 @@ int Application::exec()
         for (const QBtCommandLineParameters &params : asConst(m_paramsQueue))
             processParams(params);
         m_paramsQueue.clear();
+
+        // set session state based on scheduler settings
+        //FIXME think about better way
+        BitTorrent::Session *const session = BitTorrent::Session::instance();
+        if (session->isAltGlobalSpeedLimitEnabled() && session->isPauseSessionScheduleEnabled())
+            session->pause();
+        else
+            session->resume();
+
     });
 
     const QBtCommandLineParameters params = commandLineArgs();

@@ -1322,34 +1322,19 @@ void SessionImpl::applyBandwidthLimits()
     m_nativeSession->apply_settings(std::move(settingsPack));
 }
 
-void SessionImpl::applySessionState()
+void SessionImpl::applySessionState(bool scheduled_pause)
 {
     BitTorrent::Session *const session = BitTorrent::Session::instance();
 
-    if(nullptr == m_nativeSession)
-    {
+
+    // if session is not ready during startup, just return
+    if(nullptr == session)
         return;
-    }
 
-    if(isAltGlobalSpeedLimitEnabled())
-    {
-        if(isPauseSessionScheduleEnabled())
-        {
-            if(!m_nativeSession->is_paused())
-            {
-                //session->pause();
-                m_nativeSession->pause();
-            }
-        }
-    }
+    if (true == scheduled_pause)
+        session->pause();
     else
-    {
-        if(m_nativeSession->is_paused())
-        {
-            m_nativeSession->resume();
-        }
-    }
-
+        session->resume();
 }
 
 void SessionImpl::configure()
@@ -3660,7 +3645,7 @@ void SessionImpl::setAltGlobalSpeedLimitEnabled(const bool enabled)
     // Save new state to remember it on startup
     m_isAltGlobalSpeedLimitEnabled = enabled;
     applyBandwidthLimits();
-    applySessionState();
+    applySessionState(isAltGlobalSpeedLimitEnabled() && isPauseSessionScheduleEnabled());
     // Notify
     emit speedLimitModeChanged(m_isAltGlobalSpeedLimitEnabled);
 }
