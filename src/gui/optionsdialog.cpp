@@ -2294,4 +2294,3 @@ void OptionsDialog::on_groupBoxSchedule_clicked(bool checked)
         m_ui->checkBoxPauseSessionSchedule->setChecked(checked);
     }
 }
-
