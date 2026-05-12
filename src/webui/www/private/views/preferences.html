@@ -2140,12 +2140,11 @@ Use ';' to split multiple entries. Can use wildcard '*'.)QBT_TR[CONTEXT=OptionsD
         const updateSchedulePauseCheckbox = () => {
             const isLimitSchedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
 
-            //disable and uncheck when scheduling disabled
+            // disable and uncheck when scheduling disabled
             document.getElementById("schedule_pause_session_checkbox").disabled = !isLimitSchedulingEnabled;
-            if(!isLimitSchedulingEnabled){
+            if(!isLimitSchedulingEnabled)
                 document.getElementById("schedule_pause_session_checkbox").checked = false;
-            }
-        }
+        };
 
         const updateSchedulingEnabled = () => {
             const isLimitSchedulingEnabled = document.getElementById("limitSchedulingCheckbox").checked;
